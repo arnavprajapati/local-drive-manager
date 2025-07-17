@@ -3,7 +3,7 @@ import { readdir } from 'fs/promises'
 
 const app = express()
 
-
+// Enabling CORS
 app.use('/', (req, res, next) => {
     res.set('Access-Control-Allow-Origin', '*')
     next()
@@ -11,15 +11,16 @@ app.use('/', (req, res, next) => {
 
 // app.use(express.static("storage"))
 
+// Serving Files 
 app.use((req, res, next) => {
     console.log(req.query.action);
     if(req.query.action === 'download'){
         res.set('Content-Disposition', 'attachment')
     }
-    const serverStatic = express.static("storage")
-    serverStatic(req, res, next)
+    express.static("storage")(req, res, next)
 })
 
+// Serving Directory Content
 app.get('/', async (req, res) => {
     const fileList = await readdir("./storage")
     res.json(fileList)
