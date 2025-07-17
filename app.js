@@ -1,13 +1,16 @@
 import express from 'express'
-import { readdir, rm } from 'fs/promises'
+import { readdir, rename, rm } from 'fs/promises'
 
 const app = express()
+
+app.use(express.json())
 
 // Enabling CORS
 app.use('/', (req, res, next) => {
     res.set({
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': '*'
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Headers': '*'
     })
     next()
 })
@@ -35,6 +38,18 @@ app.delete('/:filename', async (req, res, next) => {
         res.status(404).message({"message": "file not found"})
     }
 })
+
+app.patch('/:filename', async (req, res, next) => {
+    const { filename } = req.params
+    console.log(filename);
+    console.log(req.body);
+    const oldPath = `./storage/${filename}`;
+    const newPath = `./storage/${req.body.newFileName}`;
+    await rename(oldPath, newPath);
+    res.send({"message": "rename successfully"})
+})
+
+
 
 // Serving Directory Content
 app.get('/', async (req, res) => {

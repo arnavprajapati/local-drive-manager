@@ -48,14 +48,17 @@ function App() {
     setNewFileName(oldFileName)
     console.log({oldFileName, newFileName});
 
-    const response = await fetch('http://192.168.21.114:5700/', {
+    const response = await fetch(`http://192.168.21.114:5700/${oldFileName}`, {
       method: "PATCH",
-      body: JSON.stringify({oldFileName, newFileName})
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({newFileName})
     })
     const data = await response.text()
     console.log(data);
-    getDirectoryItems()
     setNewFileName("")
+    getDirectoryItems()
     
   }
 
