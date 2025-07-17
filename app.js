@@ -9,6 +9,16 @@ app.use('/', (req, res, next) => {
     next()
 })
 
+// app.use(express.static("storage"))
+
+app.use((req, res, next) => {
+    console.log(req.query.action);
+    if(req.query.action === 'download'){
+        res.set('Content-Disposition', 'attachment')
+    }
+    const serverStatic = express.static("storage")
+    serverStatic(req, res, next)
+})
 
 app.get('/', async (req, res) => {
     const fileList = await readdir("./storage")
@@ -18,4 +28,3 @@ app.get('/', async (req, res) => {
 app.listen(5700, () => {
     console.log("server started at port 5700");
 })
-app.use(express.static("storage"))
