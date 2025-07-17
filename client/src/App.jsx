@@ -15,7 +15,7 @@ function App() {
     const file = e.target.files[0];
 
     const xhr = new XMLHttpRequest()
-    xhr.open("POST", "http://192.168.21.114:5700", true)
+    xhr.open("POST", `http://192.168.21.114:5700/${file.name}`, true)
     xhr.setRequestHeader("filename", file.name)
     xhr.addEventListener("load", () => {
       console.log(xhr.response);
