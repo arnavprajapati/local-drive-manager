@@ -1,11 +1,14 @@
 import express from 'express'
-import { readdir } from 'fs/promises'
+import { readdir, rm } from 'fs/promises'
 
 const app = express()
 
 // Enabling CORS
 app.use('/', (req, res, next) => {
-    res.set('Access-Control-Allow-Origin', '*')
+    res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': '*'
+    })
     next()
 })
 
@@ -20,6 +23,17 @@ app.get('/:filename', (req, res, next) => {
         res.set('Content-Disposition', 'attachment')
     }
     res.sendFile(`${import.meta.dirname}/storage/${filename}`)
+})
+
+app.delete('/:filename', async (req, res, next) => {
+    const { filename } = req.params
+    const filePath = `./storage/${filename}`
+    try{
+        await rm(filePath)
+        res.json({"message": "file deleted successfully"})
+    }catch(err){
+        res.status(404).message({"message": "file not found"})
+    }
 })
 
 // Serving Directory Content

@@ -30,9 +30,8 @@ function App() {
   }
 
   async function handleDelete(fileName) {
-    const response = await fetch('http://192.168.21.114:5700/', {
+    const response = await fetch(`http://192.168.21.114:5700/${fileName}`, {
       method: "DELETE",
-      body: fileName
     })
     const data = await response.text()
     console.log(data);
