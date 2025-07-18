@@ -1,25 +1,29 @@
 import express from 'express'
 import { createWriteStream } from 'fs'
-import { readdir, rename, rm } from 'fs/promises'
+import { readdir, rename, rm, stat } from 'fs/promises'
+import cors from "cors"
 
 const app = express()
 
 app.use(express.json())
 
-// Enabling CORS
-app.use('/', (req, res, next) => {
-    res.set({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*'
-    })
-    next()
+app.use(cors())
+
+app.get('/directory/:dirname?', async (req, res) => {
+    const { dirname } = req.params
+    console.log(dirname);
+    const fullPathDir = `./storage/${dirname ? dirname : ""}`
+    const fileList = await readdir(fullPathDir)
+    const resData = []
+    for(const item of fileList){
+        const stats = await stat(`${fullPathDir}/${item}`)
+        resData.push({"name": item, "isDirectory": stats.isDirectory() })
+    }
+    // console.log(resData);
+    res.json(resData)
 })
 
-// app.use(express.static("storage"))
-
-// Serving Files using dynamic routing 
-app.get('/:filename', (req, res, next) => {
+app.get('/files/:filename', (req, res, next) => {
     console.log(req.url);
     const { filename } = req.params
     console.log(filename);
@@ -29,7 +33,7 @@ app.get('/:filename', (req, res, next) => {
     res.sendFile(`${import.meta.dirname}/storage/${filename}`)
 })
 
-app.post('/:filename', (req, res, next) => {
+app.post('/files/:filename', (req, res, next) => {
     const { filename } = req.params
     console.log(filename);
     const writeStream = createWriteStream(`./storage/${filename}`)
@@ -39,7 +43,7 @@ app.post('/:filename', (req, res, next) => {
     })
 })
 
-app.delete('/:filename', async (req, res, next) => {
+app.delete('/files/:filename', async (req, res, next) => {
     const { filename } = req.params
     const filePath = `./storage/${filename}`
     try{
@@ -50,7 +54,7 @@ app.delete('/:filename', async (req, res, next) => {
     }
 })
 
-app.patch('/:filename', async (req, res, next) => {
+app.patch('/files/:filename', async (req, res, next) => {
     const { filename } = req.params
     console.log(filename);
     console.log(req.body);
@@ -60,11 +64,6 @@ app.patch('/:filename', async (req, res, next) => {
     res.send({"message": "rename successfully"})
 })
 
-// Serving Directory Content
-app.get('/', async (req, res) => {
-    const fileList = await readdir("./storage")
-    res.json(fileList)
-})
 
 app.listen(5700, () => {
     console.log("server started at port 5700");
