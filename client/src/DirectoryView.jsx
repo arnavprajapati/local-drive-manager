@@ -81,9 +81,9 @@ function DirectoryView() {
             {directoryItems.map(({ name, isDirectory }, i) => (
                 <div key={i}>
                     {name} {isDirectory && <a href={`./${name}`}>Open</a>} 
-                    {!isDirectory && <a href={`${BASE_URL}/files/${name}?action=open`}>Open</a>}{" "}
+                    {!isDirectory && <a href={`${BASE_URL}/files/${dirPath}/${name}?action=open`}>Open</a>}{" "}
                     {!isDirectory &&
-                        <a href={`${BASE_URL}/files/${name}?action=download`}>Download</a>
+                        <a href={`${BASE_URL}/files/${dirPath}/${name}?action=download`}>Download</a>
                     }
                     <button onClick={() => {
                         renameFile(name)
