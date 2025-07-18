@@ -60,8 +60,6 @@ app.patch('/:filename', async (req, res, next) => {
     res.send({"message": "rename successfully"})
 })
 
-
-
 // Serving Directory Content
 app.get('/', async (req, res) => {
     const fileList = await readdir("./storage")
