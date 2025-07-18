@@ -9,10 +9,10 @@ app.use(express.json())
 
 app.use(cors())
 
-app.get('/directory/:dirname?', async (req, res) => {
-    const { dirname } = req.params
-    // console.log(dirname);
-    const fullPathDir = `./storage/${dirname ? dirname : ""}`
+app.get('/directory/*?', async (req, res) => {
+    const { 0: dirPath } = req.params
+    // console.log(dirPath);
+    const fullPathDir = `./storage/${dirPath ? dirPath : ""}`
     const fileList = await readdir(fullPathDir)
     const resData = []
     for(const item of fileList){

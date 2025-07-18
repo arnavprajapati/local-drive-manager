@@ -1,5 +1,5 @@
-import { use, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 function DirectoryView() {
     const BASE_URL = "http://192.168.21.114:5700"
@@ -69,7 +69,7 @@ function DirectoryView() {
 
     useEffect(() => {
         getDirectoryItems();
-    }, []);
+    }, [dirPath]);
     return (
         <>
             <h1>My Files</h1>
@@ -80,7 +80,7 @@ function DirectoryView() {
             <p>Progress: {progress}%</p>
             {directoryItems.map(({ name, isDirectory }, i) => (
                 <div key={i}>
-                    {name} {isDirectory && <a href={`./${name}`}>Open</a>} 
+                    {name}    {isDirectory && <Link to={`./${name}`}>Open</Link>} 
                     {!isDirectory && <a href={`${BASE_URL}/files/${dirPath}/${name}?action=open`}>Open</a>}{" "}
                     {!isDirectory &&
                         <a href={`${BASE_URL}/files/${dirPath}/${name}?action=download`}>Download</a>
