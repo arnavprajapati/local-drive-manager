@@ -44,7 +44,12 @@ const DirectoryView = () => {
         try {
             const response = await fetch(`${BASE_URL}directory/${dirPath || ''}`);
             const data = await response.json();
-            setDirectoryItems(data);
+            if (Array.isArray(data)) {
+                setDirectoryItems(data);
+            } else {
+                console.error('Directory data is not an array:', data);
+                setDirectoryItems([]);
+            }
         } catch (err) {
             console.error('Failed to fetch directory:', err);
         }
@@ -67,7 +72,7 @@ const DirectoryView = () => {
             setTimeout(() => setProgress(0), 2000);
         });
         xhr.upload.addEventListener('progress', (ev) => {
-            const percent = Math.round((ev.loaded / ev.total) * 100);
+            const percent = (ev.loaded / ev.total) * 100;
             setProgress(percent);
         });
         xhr.send(file);

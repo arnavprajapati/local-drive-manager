@@ -51,21 +51,26 @@ app.get('/directory/?*', async (req, res, next) => {
         const readDirectory = await readdir(`${fullDirPath}`)
         const data = []
         for (const item of readDirectory) {
-            const itemPath = `${fullDirPath}/${item}`;
-            const fileStat = await stat(itemPath)
-            let size = fileStat.size;
-            
-            if (fileStat.isDirectory()) {
-                size = await getFolderSize(itemPath);
+            const itemPath = join(fullDirPath, item);
+            try {
+                const fileStat = await stat(itemPath)
+                let size = fileStat.size;
+                
+                if (fileStat.isDirectory()) {
+                    size = await getFolderSize(itemPath);
+                }
+                
+                data.push({
+                    'name': item,
+                    'isDirectory': fileStat.isDirectory(),
+                    'size': size
+                })
+            } catch (err) {
+                console.error(`Error processing item ${item}:`, err);
             }
-            
-            data.push({
-                'name': item,
-                'isDirectory': fileStat.isDirectory(),
-                'size': size
-            })
         }
         res.json(data)
+
     } catch (err) {
         res.status(500).json({ error: 'Failed to read directory' })
     }
@@ -90,8 +95,17 @@ app.post('/files/*', (req, res) => {
     const { 0: filename } = req.params
     const writeFile = createWriteStream(`./storage/${filename}`)
     req.pipe(writeFile)
-    res.json({"message": "file uplaoded successfully"})
+    
+    writeFile.on('finish', () => {
+        res.json({"message": "file uploaded successfully"})
+    })
+    
+    writeFile.on('error', (err) => {
+        console.error('Upload error:', err)
+        res.status(500).json({ "message": "upload failed", error: err.message })
+    })
 })
+
 
 app.patch('/files/*', async (req, res, next) => {
     const { 0: filename } = req.params

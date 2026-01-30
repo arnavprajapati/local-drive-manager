@@ -125,7 +125,7 @@ const FileRow = ({
                     </button>
                     <button
                         onClick={() => onDelete(item.name)}
-                        className="w-8 h-8 flex items-center justify-center bg-cyan-500 text-white rounded hover:bg-red-500 cursor-pointer"
+                        className="w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
                         title="Delete"
                     >
                         <Trash2 className="w-4 h-4" />
